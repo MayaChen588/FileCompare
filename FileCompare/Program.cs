@@ -508,7 +508,7 @@ Example: FileCompare ""d:\code\v0.6"" ""d:\code\v0.7"" ""d:\result"" true
   Compare parameters
   SourcePath: Be compare source folder path, maybe the old version files folder path.
   TargetPath: Be compare target folder path, maybe the new version files folder path.
-  OutputResultPath: The compare results are output folder path, include compare list and difference report files.
+  OutputResultPath: The location of the compare results output folder path, include compare list and difference report files.
   OutputDiffFile: true or false, enable or disable output difference report files.
 
 All rights reserved by Maya.
