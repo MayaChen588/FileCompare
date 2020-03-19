@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "FileCompare": {
+      "commandName": "Project",
+      "commandLineArgs": "\"d:\\\\temp\\\\source\\\\\" \"d:\\\\temp\\\\target\" \"d:\\\\temp\\\\diffresult\" true"
+    }
+  }
+}
