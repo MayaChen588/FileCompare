@@ -503,7 +503,7 @@ namespace FileCompare
 @"Usage: FileCompare [SourcePath] [TargetPath] [OutputResultPath] [OutputDiffFile]
 Compare both folders and files, generate compare list and difference result.
 
-Example: FileCompare ""d:\code\v0.6"" ""d:\code\v0.7"" ""d:\result"" true
+Example: FileCompare ""d:\\code\\v0.6"" ""d:\\code\\v0.7"" ""d:\\result"" true
 
   Compare parameters
   SourcePath: Be compare source folder path, maybe the old version files folder path.
