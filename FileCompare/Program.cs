@@ -489,9 +489,9 @@ namespace FileCompare
             {
                 string logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "log");
 
-                if (!Directory.Exists(Path.GetDirectoryName(logPath)))
+                if (!Directory.Exists(logPath))
                 {
-                    Directory.CreateDirectory(Path.GetDirectoryName(logPath));
+                    Directory.CreateDirectory(logPath);
                 }
 
                 File.AppendAllText(Path.Combine(logPath, $"log_{DateTime.Today.ToString("yyyyMMdd")}.txt"),
