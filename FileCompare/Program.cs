@@ -487,7 +487,14 @@ namespace FileCompare
 
             if (writeLog)
             {
-                File.AppendAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "log", $"log_{DateTime.Today.ToString("yyyyMMdd")}.txt"),
+                string logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "log");
+
+                if (!Directory.Exists(Path.GetDirectoryName(logPath)))
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(logPath));
+                }
+
+                File.AppendAllText(Path.Combine(logPath, $"log_{DateTime.Today.ToString("yyyyMMdd")}.txt"),
                     $"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} {message}\r\n", Encoding.UTF8);
             }
         }
