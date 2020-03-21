@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -346,7 +347,7 @@ namespace FileCompare
 
                 file.WriteLine($"異動種類,程式種類,檔案路徑,檔案名稱,檔案種類");
 
-                foreach (var item in list)
+                foreach (var item in list.OrderBy(x => x.Value.PartPath).ThenBy(x => x.Value.FileName))
                 {
                     if (item.Value.DiffKind == DiffKind.New)
                     {
