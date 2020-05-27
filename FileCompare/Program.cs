@@ -210,6 +210,7 @@ namespace FileCompare
             string sourceFilePath = null;
             string targetFilePath = null;
             string diffFilePath = null;
+            string diffFileDirName = $"DiffFile-{DateTime.Now.ToString("yyyyMMddHHmm")}";
 
 
             foreach (var item in list)
@@ -246,7 +247,7 @@ namespace FileCompare
                     item.Value.DiffKind == DiffKind.Changed &&
                     item.Value.FileType == FileType.Text)
                 {
-                    diffFilePath = Path.Combine(resultPath, "DiffFile", item.Value.PartPath, item.Value.FileName);
+                    diffFilePath = Path.Combine(resultPath, diffFileDirName, item.Value.PartPath, item.Value.FileName);
                     CompareDiff(sourceFilePath, targetFilePath, diffFilePath);
                 }
             }
@@ -338,7 +339,8 @@ namespace FileCompare
         /// <param name="resultPath">比對結果輸出路徑</param>
         private static void GenCompareList(SortedList<string, CompareFile> list, string resultPath)
         {
-            string resultFile = Path.Combine(resultPath, "CompareList.csv");
+            string resultFileName = $"CompareList-{DateTime.Now.ToString("yyyyMMddHHmm")}.csv";
+            string resultFile = Path.Combine(resultPath, resultFileName);
 
             using (StreamWriter file = new StreamWriter(resultFile, false, Encoding.UTF8))
             {
