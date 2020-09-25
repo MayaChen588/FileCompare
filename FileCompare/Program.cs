@@ -21,6 +21,7 @@ namespace FileCompare
             // TargetPath: 比對標的路徑
             // ResultPath: 比對結果輸出目錄
             // GenDiffReport: 是否產出檔案差異報表
+            // TakeDiffFile: 是否撿取差異檔案
 
             if (!CheckArgument(args))
             {
@@ -33,6 +34,7 @@ namespace FileCompare
             string targetPath = null;
             string resultPath = null;
             bool outputDiffFile = false;
+            bool takeDiffFile = false;
 
             try
             {
@@ -55,6 +57,7 @@ namespace FileCompare
                 targetPath = Path.GetFullPath(args[1]).TrimEnd(Path.DirectorySeparatorChar);
                 resultPath = Path.GetFullPath(args[2]).TrimEnd(Path.DirectorySeparatorChar);
                 outputDiffFile = Convert.ToBoolean(args[3]);
+                takeDiffFile = Convert.ToBoolean(args[4]);
 
                 OutputMessage("Collect file list, please waiting...", true);
 
@@ -74,7 +77,7 @@ namespace FileCompare
             {
                 OutputMessage("\r\n", true);
                 OutputMessage("Compare file...", true);
-                Compare(filelist, sourcePath, targetPath, resultPath, outputDiffFile);
+                Compare(filelist, sourcePath, targetPath, resultPath, outputDiffFile, takeDiffFile);
 
                 OutputMessage("\r\n", true);
                 OutputMessage("Generate CompareList.csv ...", true);
@@ -181,8 +184,9 @@ namespace FileCompare
         /// <param name="sourcePath">來源路徑</param>
         /// <param name="targetPath">對象路徑</param>
         /// <param name="resultPath">比對結果輸出路徑</param>
-        /// <param name="outputDiffFile">是否產出差異檔案</param>
-        private static void Compare(SortedList<string, CompareFile> list, string sourcePath, string targetPath, string resultPath, bool outputDiffFile)
+        /// <param name="outputDiffFile">是否產出差異檔案比對</param>
+        /// <param name="takeDiffFile">是否取出差異檔案</param>
+        private static void Compare(SortedList<string, CompareFile> list, string sourcePath, string targetPath, string resultPath, bool outputDiffFile, bool takeDiffFile)
         {
             if (list == null)
             {
@@ -205,12 +209,14 @@ namespace FileCompare
                 Directory.CreateDirectory(resultPath);
             }
 
+            string tmpName = $"{DateTime.Now.ToString("yyyyMMddHHmm")}";
 
             int count = 0;
             string sourceFilePath = null;
             string targetFilePath = null;
-            string diffFilePath = null;
-            string diffFileDirName = $"DiffFile-{DateTime.Now.ToString("yyyyMMddHHmm")}";
+            string outputFilePath = null;
+            string FilediffDirName = $"FileDiff-{tmpName}";
+            string diffFileDirName = $"DiffFile-{tmpName}";
 
 
             foreach (var item in list)
@@ -247,8 +253,16 @@ namespace FileCompare
                     item.Value.DiffKind == DiffKind.Changed &&
                     item.Value.FileType == FileType.Text)
                 {
-                    diffFilePath = Path.Combine(resultPath, diffFileDirName, item.Value.PartPath, item.Value.FileName);
-                    CompareDiff(sourceFilePath, targetFilePath, diffFilePath);
+                    outputFilePath = Path.Combine(resultPath, FilediffDirName, item.Value.PartPath, item.Value.FileName);
+                    CompareDiff(sourceFilePath, targetFilePath, outputFilePath);
+                }
+
+                if (takeDiffFile &&
+                    (item.Value.DiffKind == DiffKind.Changed ||
+                        item.Value.DiffKind == DiffKind.New))
+                {
+                    outputFilePath = Path.Combine(resultPath, diffFileDirName, item.Value.PartPath, item.Value.FileName);
+                    TakeDiffFile(targetFilePath, outputFilePath);
                 }
             }
         }
@@ -274,7 +288,7 @@ namespace FileCompare
 
 
         /// <summary>
-        /// 比對檔案產生差異檔案
+        /// 比對檔案產生差異檔案至指定路徑
         /// </summary>
         /// <param name="sourceFile">來源檔案路徑檔名</param>
         /// <param name="targetFile">對象檔案路徑檔名</param>
@@ -329,6 +343,21 @@ namespace FileCompare
 
                 p.Close();
             }
+        }
+
+        /// <summary>
+        /// 取出差異檔案至指定路徑
+        /// </summary>
+        /// <param name="targetFile">對象檔案路徑檔名</param>
+        /// <param name="diffFile">差異檔案路徑檔名</param>
+        private static void TakeDiffFile(string targetFile, string diffFile)
+        {
+            if (!Directory.Exists(Path.GetDirectoryName(diffFile)))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(diffFile));
+            }
+
+            File.Copy(targetFile, diffFile, true);
         }
 
 
@@ -450,7 +479,7 @@ namespace FileCompare
         /// <returns>true:檢驗OK, false:有誤</returns>
         private static bool CheckArgument(string[] args)
         {
-            if (args == null || args.Length != 4)
+            if (args == null || args.Length != 5)
             {
                 ShowArgumentTips();
                 return false;
@@ -510,7 +539,7 @@ namespace FileCompare
         private static void ShowArgumentTips()
         {
             Console.WriteLine(
-@"Usage: FileCompare [SourcePath] [TargetPath] [OutputResultPath] [OutputDiffFile]
+@"Usage: FileCompare [SourcePath] [TargetPath] [OutputResultPath] [OutputDiffFile] [TakeDiffFile]
 Compare both folders and files, generate compare list and difference result.
 
 Example: FileCompare ""d:\\code\\v0.6"" ""d:\\code\\v0.7"" ""d:\\result"" true
@@ -519,7 +548,8 @@ Example: FileCompare ""d:\\code\\v0.6"" ""d:\\code\\v0.7"" ""d:\\result"" true
   SourcePath: Be compare source folder path, maybe the old version files folder path.
   TargetPath: Be compare target folder path, maybe the new version files folder path.
   OutputResultPath: The location of the compare results output folder path, include compare list and difference report files.
-  OutputDiffFile: true or false, enable or disable output difference report files.
+  OutputDiffFile: true or false, set true to output difference report files.
+  TakeDiffFile: true or false, set true to take out difference files.
 
 All rights reserved by Maya.
 ");
