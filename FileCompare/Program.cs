@@ -255,6 +255,12 @@ namespace FileCompare
                 {
                     outputFilePath = Path.Combine(resultPath, FilediffDirName, item.Value.PartPath, item.Value.FileName);
                     CompareDiff(sourceFilePath, targetFilePath, outputFilePath);
+
+                    if (File.Exists(outputFilePath))
+                    {
+                        FileInfo fileInfo = new FileInfo(outputFilePath);
+                        item.Value.FileDiffLength = fileInfo.Length;
+                    }
                 }
 
                 if (takeDiffFile &&
@@ -376,7 +382,7 @@ namespace FileCompare
                 string diffKind = String.Empty;
                 string fileType = String.Empty;
 
-                file.WriteLine($"異動種類,程式種類,檔案路徑,檔案名稱,檔案種類");
+                file.WriteLine($"異動種類,程式種類,檔案路徑,檔案名稱,檔案種類,檔案差異大小(byte)");
 
                 foreach (var item in list.OrderBy(x => x.Value.PartPath).ThenBy(x => x.Value.FileName))
                 {
@@ -411,7 +417,8 @@ namespace FileCompare
                     }
 
 
-                    file.WriteLine($"{diffKind},{"SRC"},{item.Value.PartPath},{item.Value.FileName},{fileType}");
+                    file.WriteLine($"{diffKind},{"SRC"},{item.Value.PartPath},{item.Value.FileName},{fileType}" +
+                        $",{(item.Value.FileDiffLength.HasValue ? item.Value.FileDiffLength.Value.ToString() : String.Empty)}");
                 }
 
                 file.Close();

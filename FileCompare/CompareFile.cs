@@ -50,5 +50,9 @@ namespace FileCompare
         /// 比對差異類型
         /// </summary>
         public DiffKind DiffKind { get; set; }
+        /// <summary>
+        /// 檔案差異內容大小(byte)
+        /// </summary>
+        public long? FileDiffLength { get; set; }
     }
 }
