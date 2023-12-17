@@ -215,8 +215,8 @@ namespace FileCompare
             string sourceFilePath = null;
             string targetFilePath = null;
             string outputFilePath = null;
-            string FilediffDirName = $"FileDiff-{tmpName}";
-            string diffFileDirName = $"DiffFile-{tmpName}";
+            string CompareReportDirName = $"CompareReports-{tmpName}";
+            string diffFileDirName = $"DiffFiles-{tmpName}";
 
 
             foreach (var item in list)
@@ -253,7 +253,7 @@ namespace FileCompare
                     item.Value.DiffKind == DiffKind.Changed &&
                     item.Value.FileType == FileType.Text)
                 {
-                    outputFilePath = Path.Combine(resultPath, FilediffDirName, item.Value.PartPath, item.Value.FileName);
+                    outputFilePath = Path.Combine(resultPath, CompareReportDirName, item.Value.PartPath, item.Value.FileName);
                     CompareDiff(sourceFilePath, targetFilePath, outputFilePath);
 
                     if (File.Exists(outputFilePath))
